@@ -2,7 +2,7 @@ const mineflayer = require('mineflayer')
 
 function createBot() {
   const bot = mineflayer.createBot({
-    host: 'IP_SERVER',
+    host: 'kingsmp.vn',
     port: 25565,
     username: 'Bot24_7',
     version: '1.21.1'
@@ -21,5 +21,6 @@ function createBot() {
     console.log('❌ Bị kick:', reason)
   })
 }
+
 
 createBot()
