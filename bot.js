@@ -1,10 +1,10 @@
 const mineflayer = require("mineflayer")
 const express = require("express")
 
-// tạo web server cho Render
+// web server cho Render
 const app = express()
 app.get("/", (req, res) => {
-  res.send("Bot Minecraft đang chạy!")
+  res.send("Minecraft bot đang chạy!")
 })
 
 app.listen(process.env.PORT || 3000)
@@ -25,23 +25,46 @@ bot.on("login", () => {
 bot.on("spawn", () => {
   console.log("🌍 Bot đã spawn")
 
+  // login
   setTimeout(() => {
     bot.chat("/login 123456")
   }, 5000)
 
+  // chống AFK
   setInterval(() => {
     bot.setControlState("jump", true)
-    setTimeout(() => bot.setControlState("jump", false), 500)
+
+    setTimeout(() => {
+      bot.setControlState("jump", false)
+    }, 500)
+
+    bot.look(
+      Math.random() * Math.PI * 2,
+      Math.random() * Math.PI / 2,
+      true
+    )
+
   }, 30000)
+
+  // chat tự động
+  setInterval(() => {
+    bot.chat("Bot AFK đang hoạt động 🤖")
+  }, 300000)
+
 })
 
-bot.on("end", () => {
-  console.log("🔄 Bot mất kết nối, reconnect sau 10s...")
-  setTimeout(createBot, 10000)
+bot.on("chat", (username, message) => {
+  if (username === bot.username) return
+  console.log(username + ": " + message)
 })
 
 bot.on("kicked", (reason) => {
   console.log("❌ Bot bị kick:", reason)
+})
+
+bot.on("end", () => {
+  console.log("🔄 Mất kết nối, reconnect sau 10s...")
+  setTimeout(createBot, 10000)
 })
 
 bot.on("error", (err) => {
