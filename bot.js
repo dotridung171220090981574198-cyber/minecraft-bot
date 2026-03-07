@@ -1,26 +1,48 @@
 const mineflayer = require('mineflayer')
 
-function createBot() {
-  const bot = mineflayer.createBot({
-    host: 'kingsmp.vn',
-    port: 25565,
-    username: 'Bot24_7',
-    version: '1.21.1'
-  })
+const bot = mineflayer.createBot({
+  host: 'kingsmp.vn', // điền IP server
+  port: 25565,
+  username: 'tridumgg1234',
+  version: '1.21.1'
+})
 
-  bot.on('login', () => {
-    console.log('✅ Bot đã vào server')
-  })
+bot.once('spawn', () => {
+  console.log('✅ Bot đã vào server')
 
-  bot.on('end', () => {
-    console.log('🔁 Bot out, reconnect sau 5s')
-    setTimeout(createBot, 5000)
-  })
+  setTimeout(() => {
+    bot.chat('/dn 1x1x1x1')
+    console.log('🔓 Đã login')
+  }, 3000)
+})
 
-  bot.on('kicked', (reason) => {
-    console.log('❌ Bị kick:', reason)
-  })
-}
+bot.on('windowOpen', (window) => {
+  console.log('📦 Đã mở menu:', window.title)
 
+  // slot KingSMP (có thể cần chỉnh)
+  const kingSlot = 24
 
-createBot()
+  setTimeout(() => {
+    bot.clickWindow(kingSlot, 0, 0)
+    console.log('👑 Đã chọn KingSMP')
+  }, 2000)
+})
+
+bot.on('spawn', () => {
+  // mở đồng hồ
+  setTimeout(() => {
+    const item = bot.inventory.items().find(i => i.name.includes('clock'))
+    if (item) {
+      bot.activateItem()
+      console.log('🕒 Đã mở menu bằng đồng hồ')
+    }
+  }, 8000)
+})
+
+bot.on('kicked', (reason) => {
+  console.log('❌ Bị kick:', reason)
+})
+
+bot.on('error', (err) => {
+  console.log('⚠️ Lỗi:', err)
+})
