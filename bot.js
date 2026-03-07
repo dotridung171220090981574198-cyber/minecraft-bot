@@ -1,7 +1,7 @@
 const mineflayer = require('mineflayer')
 
 const bot = mineflayer.createBot({
-  host: 'kingsmp.vn', // điền IP server
+  host: 'play.kingsmp.vn', // điền IP server
   port: 25565,
   username: 'tridumgg1234',
   version: '1.21.1'
@@ -46,3 +46,4 @@ bot.on('kicked', (reason) => {
 bot.on('error', (err) => {
   console.log('⚠️ Lỗi:', err)
 })
+
