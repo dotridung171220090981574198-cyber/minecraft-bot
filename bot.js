@@ -6,15 +6,19 @@ const app = express()
 app.get("/", (req, res) => {
   res.send("Minecraft bot đang chạy!")
 })
-
 app.listen(process.env.PORT || 3000)
+
+// tạo username random
+function randomName() {
+  return "AFK_" + Math.floor(Math.random() * 100000)
+}
 
 function createBot() {
 
 const bot = mineflayer.createBot({
   host: "kingsmp.vn",
   port: 25565,
-  username: "AFK_Bot_01",
+  username: randomName(),
   version: false
 })
 
@@ -53,18 +57,13 @@ bot.on("spawn", () => {
 
 })
 
-bot.on("chat", (username, message) => {
-  if (username === bot.username) return
-  console.log(username + ": " + message)
-})
-
 bot.on("kicked", (reason) => {
   console.log("❌ Bot bị kick:", reason)
 })
 
 bot.on("end", () => {
-  console.log("🔄 Mất kết nối, reconnect sau 10s...")
-  setTimeout(createBot, 10000)
+  console.log("🔄 Mất kết nối, reconnect sau 30s...")
+  setTimeout(createBot, 30000)
 })
 
 bot.on("error", (err) => {
