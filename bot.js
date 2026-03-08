@@ -8,7 +8,6 @@ app.get("/", (req, res) => {
 })
 app.listen(process.env.PORT || 3000)
 
-// tạo username random
 function randomName() {
   return "AFK_" + Math.floor(Math.random() * 100000)
 }
@@ -22,6 +21,9 @@ const bot = mineflayer.createBot({
   version: false
 })
 
+let antiAfk
+let autoChat
+
 bot.on("login", () => {
   console.log("✅ Bot đã vào server")
 })
@@ -29,13 +31,15 @@ bot.on("login", () => {
 bot.on("spawn", () => {
   console.log("🌍 Bot đã spawn")
 
-  // login
+  // login hoặc register
   setTimeout(() => {
     bot.chat("/login 123456")
-  }, 5000)
+    bot.chat("/register 123456 123456")
+  }, 7000)
 
   // chống AFK
-  setInterval(() => {
+  antiAfk = setInterval(() => {
+
     bot.setControlState("jump", true)
 
     setTimeout(() => {
@@ -51,7 +55,7 @@ bot.on("spawn", () => {
   }, 30000)
 
   // chat tự động
-  setInterval(() => {
+  autoChat = setInterval(() => {
     bot.chat("Bot AFK đang hoạt động 🤖")
   }, 300000)
 
@@ -59,10 +63,20 @@ bot.on("spawn", () => {
 
 bot.on("kicked", (reason) => {
   console.log("❌ Bot bị kick:", reason)
+
+  clearInterval(antiAfk)
+  clearInterval(autoChat)
+
+  console.log("🔁 Vào lại sau 10s...")
+  setTimeout(createBot, 10000)
 })
 
 bot.on("end", () => {
   console.log("🔄 Mất kết nối, reconnect sau 30s...")
+
+  clearInterval(antiAfk)
+  clearInterval(autoChat)
+
   setTimeout(createBot, 30000)
 })
 
