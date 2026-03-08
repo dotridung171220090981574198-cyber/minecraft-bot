@@ -4,137 +4,101 @@ const mineflayer = require("mineflayer")
 const express = require("express")
 
 const HOST = "kingsmp.vn"
-const PORT = 25565
 const USERNAME = "tridumgg1234"
 const PASSWORD = "1x1x1x1"
-const VERSION = "1.20.1"
 
-// web server cho Render
 const app = express()
-app.get("/", (req, res) => {
-  res.send("Minecraft bot đang chạy")
-})
+app.get("/", (req, res) => res.send("Bot đang chạy"))
 app.listen(process.env.PORT || 3000)
 
-function createBot() {
+function createBot(){
 
 console.log("🤖 Đang tạo bot...")
 
 const bot = mineflayer.createBot({
   host: HOST,
-  port: PORT,
   username: USERNAME,
-  version: VERSION
+  version: "1.20.1"
 })
 
 let antiAfk
 
-bot.on("login", () => {
-  console.log("✅ Bot đã login server")
-})
-
 bot.on("spawn", () => {
 
-  console.log("🌍 Bot đã spawn")
+console.log("🌍 Bot spawn")
 
-  // bước 1: /dn
-  setTimeout(() => {
-    console.log("🔐 gửi lệnh /dn")
-    bot.chat(`/dn ${PASSWORD}`)
-  }, 5000)
+setTimeout(()=>{
+  console.log("🔐 gửi /dn")
+  bot.chat(`/dn ${PASSWORD}`)
+},5000)
 
-  // bước 4: mở menu đồng hồ
-  setTimeout(() => {
+setTimeout(()=>{
 
-    const clock = bot.inventory.items().find(item =>
-      item.name.includes("clock")
-    )
+const clock = bot.inventory.items().find(i=>i.name.includes("clock"))
 
-    if (!clock) {
-      console.log("❌ Không tìm thấy đồng hồ menu")
-      return
-    }
+if(!clock){
+console.log("❌ Không thấy đồng hồ")
+return
+}
 
-    bot.equip(clock, "hand", () => {
+bot.equip(clock,"hand",()=>{
+console.log("⌚ mở menu")
+bot.activateItem()
+})
 
-      console.log("⌚ Đã cầm đồng hồ")
+},12000)
 
-      setTimeout(() => {
-        console.log("📂 Mở menu server")
-        bot.activateItem()
-      }, 2000)
+antiAfk=setInterval(()=>{
 
-    })
+bot.setControlState("jump",true)
 
-  }, 12000)
+setTimeout(()=>{
+bot.setControlState("jump",false)
+},400)
 
+bot.look(Math.random()*Math.PI*2,Math.random()*Math.PI/2,true)
 
-  // chống AFK
-  antiAfk = setInterval(() => {
-
-    bot.setControlState("jump", true)
-
-    setTimeout(() => {
-      bot.setControlState("jump", false)
-    }, 400)
-
-    bot.look(
-      Math.random() * Math.PI * 2,
-      Math.random() * Math.PI / 2,
-      true
-    )
-
-  }, 60000)
+},60000)
 
 })
 
+bot.on("windowOpen",(window)=>{
 
-// khi menu mở
-bot.on("windowOpen", (window) => {
+console.log("📦 menu mở")
 
-  console.log("📦 Menu mở:", window.title)
-
-  // dòng 3 ô 7 = slot 24
-  setTimeout(() => {
-
-    console.log("🎮 Chọn cụm KingSMP")
-
-    bot.clickWindow(24, 0, 0)
-
-  }, 2000)
+setTimeout(()=>{
+bot.clickWindow(24,0,0)
+console.log("🎮 chọn KingSMP")
+},2000)
 
 })
 
+bot.on("kicked",(r)=>{
 
-// reconnect khi bị kick
-bot.on("kicked", (reason) => {
+console.log("❌ Bot bị kick:",r)
 
-  console.log("❌ Bot bị kick:", reason)
+clearInterval(antiAfk)
 
-  clearInterval(antiAfk)
+console.log("⏳ reconnect sau 60s")
 
-  console.log("🔄 reconnect sau 15s")
-
-  setTimeout(createBot, 15000)
+setTimeout(createBot,60000)
 
 })
 
+bot.on("end",()=>{
 
-// reconnect khi mất kết nối
-bot.on("end", () => {
+console.log("🔌 mất kết nối")
 
-  console.log("🔄 Mất kết nối")
+clearInterval(antiAfk)
 
-  clearInterval(antiAfk)
+console.log("⏳ reconnect sau 60s")
 
-  setTimeout(createBot, 15000)
+setTimeout(createBot,60000)
 
 })
 
-bot.on("error", (err) => {
-  console.log("⚠️ Lỗi:", err)
-})
+bot.on("error",console.log)
 
 }
 
-createBot()
+setTimeout(createBot,10000)
